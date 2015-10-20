@@ -1,3 +1,4 @@
+package Regression;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class LogitRegression {
 				double error = Double.parseDouble(data.get(i).get(length - 1)) - p;
 				for (int k = 0; k < length - 1; k++) {
 					gradientVector[k] = gradientVector[k] + error * Double.parseDouble(data.get(i).get(k));
-					gradientVector[k] = gradientVector[k] * 0.01;
+					gradientVector[k] = gradientVector[k] * 0.001;
 				}
 				for (int m = 0; m < weightVector.length; m++) {
 					weightVector[m] = weightVector[m] + gradientVector[m];
