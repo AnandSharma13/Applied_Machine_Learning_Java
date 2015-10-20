@@ -12,6 +12,7 @@ public class LogitRegression {
 		double[] prevWeightVector = new double[length - 1];
 		while (true) {
 			double[] gradientVector = new double[length - 1];
+			
 			if (IsConverge(prevWeightVector, weightVector))
 				break;
 			else
@@ -20,7 +21,6 @@ public class LogitRegression {
 			for (int i = 1; i < data.size(); i++) {
 				double p = findSigmoidOutput(data, i, length, weightVector);
 				double error = Double.parseDouble(data.get(i).get(length - 1)) - p;
-
 				for (int k = 0; k < length - 1; k++) {
 					gradientVector[k] = gradientVector[k] + error * Double.parseDouble(data.get(i).get(k));
 					gradientVector[k] = gradientVector[k] * 0.01;
@@ -35,21 +35,19 @@ public class LogitRegression {
 
 	public static void runTest(ArrayList<ArrayList<String>> data, double[] weightVector) {
 		int length = data.get(0).size();
-		
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		for (int i = 1; i < data.size(); i++) {
 			double predictedLabel = findSigmoidOutput(data, i, length, weightVector);
 			double trueLabel = Double.parseDouble(data.get(i).get(length - 1));
 			
-			int adjustedLabel = (predictedLabel > 0.5)? 1 : 0;
-			String labels = (int)trueLabel+","+adjustedLabel;
-			if(map.containsKey(labels))
-				//if key already exists increase the count
-				map.put(labels, map.get(labels)+1);
+			int adjustedLabel = (predictedLabel > 0.5) ? 1 : 0;
+			String labels = (int) trueLabel + "," + adjustedLabel;
+			if (map.containsKey(labels))
+				// if key already exists increase the count
+				map.put(labels, map.get(labels) + 1);
 			else
-				map.put(labels, 1);							
+				map.put(labels, 1);
 		}
-		
 		ConfusionMatrix.printConfusionMatrix(map);
 	}
 
@@ -59,8 +57,8 @@ public class LogitRegression {
 		for (int j = 0; j < length - 1; j++) {
 			sum += Double.parseDouble(data.get(i).get(j)) * weightVector[j];
 		}
-		double p = 1 / (1 + Math.exp(-sum));
-		return p;
+		double probability = 1 / (1 + Math.exp(-sum));
+		return probability;
 	}
 
 	public static boolean IsConverge(double[] Vector1, double[] Vector2) {
@@ -77,12 +75,10 @@ public class LogitRegression {
 	}
 
 	public static void main(String[] args) {
-
 		CsvReader reader = new CsvReader();
 		String trainFile = "src/zoo-train.csv";
 		String testFile = "src/zoo-test.csv";
 		try {
-
 			ArrayList<ArrayList<String>> testData = reader.readFile(trainFile);
 			double[] weightVector = findWeightVector(testData);
 			ArrayList<ArrayList<String>> trainData = reader.readFile(testFile);

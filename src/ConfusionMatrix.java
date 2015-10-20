@@ -8,7 +8,6 @@ import java.util.Set;
 public class ConfusionMatrix {
 
 	public static void printConfusionMatrix(HashMap<String, Integer> map) {
-
 		ArrayList<String> labelNames = getClassNames(map);
 		System.out.print("T\\P");
 		for (String predictedValues : labelNames) {
