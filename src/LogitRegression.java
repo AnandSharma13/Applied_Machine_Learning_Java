@@ -2,15 +2,14 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class LogitRegression {
 
 	public static double[] findWeightVector(ArrayList<ArrayList<String>> data) {
-
 		int length = data.get(0).size();
 		double[] weightVector = new double[length - 1];
 		double[] prevWeightVector = new double[length - 1];
-
 		while (true) {
 			double[] gradientVector = new double[length - 1];
 			if (IsConverge(prevWeightVector, weightVector))
@@ -19,7 +18,7 @@ public class LogitRegression {
 				prevWeightVector = Arrays.copyOf(weightVector, weightVector.length);
 
 			for (int i = 1; i < data.size(); i++) {
-				double p = calculateLiklihood(data, i, length, weightVector);
+				double p = findSigmoidOutput(data, i, length, weightVector);
 				double error = Double.parseDouble(data.get(i).get(length - 1)) - p;
 
 				for (int k = 0; k < length - 1; k++) {
@@ -35,23 +34,26 @@ public class LogitRegression {
 	}
 
 	public static void runTest(ArrayList<ArrayList<String>> data, double[] weightVector) {
-
 		int length = data.get(0).size();
-
+		
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		for (int i = 1; i < data.size(); i++) {
-			double predictedLabel = calculateLiklihood(data, i, length, weightVector);
+			double predictedLabel = findSigmoidOutput(data, i, length, weightVector);
 			double trueLabel = Double.parseDouble(data.get(i).get(length - 1));
-			if (predictedLabel > 0.5) {
-				System.out.println("True Label \t" + (int) trueLabel + "\tPredicated Label\t 1");
-			} else {
-				System.out.println("True Label \t" + (int) trueLabel + "\tPredicated Label\t 0");
-
-			}
+			
+			int adjustedLabel = (predictedLabel > 0.5)? 1 : 0;
+			String labels = (int)trueLabel+","+adjustedLabel;
+			if(map.containsKey(labels))
+				//if key already exists increase the count
+				map.put(labels, map.get(labels)+1);
+			else
+				map.put(labels, 1);							
 		}
-
+		
+		ConfusionMatrix.printConfusionMatrix(map);
 	}
 
-	public static double calculateLiklihood(ArrayList<ArrayList<String>> data, int i, int length,
+	public static double findSigmoidOutput(ArrayList<ArrayList<String>> data, int i, int length,
 			double[] weightVector) {
 		int sum = 0;
 		for (int j = 0; j < length - 1; j++) {
@@ -62,9 +64,7 @@ public class LogitRegression {
 	}
 
 	public static boolean IsConverge(double[] Vector1, double[] Vector2) {
-
 		double sum = 0;
-
 		for (int i = 0; i < Vector1.length; i++) {
 			double difference = Vector2[i] - Vector1[i];
 			sum += difference;
